@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---- NextAuth models ----
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  courses       Course[]
+  createdAt     DateTime  @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ---- Lecture AI models ----
+model Course {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  day         Int?
+  period      Int?
+  year        Int?
+  semester    String?
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  materials   Material[]
+}
+
+model Material {
+  id            String       @id @default(cuid())
+  title         String
+  fileName      String
+  filePath      String
+  fileType      String
+  fileSize      Int
+  extractedText String?
+  summary       String?
+  courseId      String
+  course        Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  quizzes       Quiz[]
+  chatMessages  ChatMessage[]
+}
+
+model Quiz {
+  id         String   @id @default(cuid())
+  materialId String
+  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  questions  String
+  format     String   @default("multiple-choice")
+  createdAt  DateTime @default(now())
+}
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  materialId String
+  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  role       String
+  content    String
+  createdAt  DateTime @default(now())
+}
+
+// ---- Expense models (unchanged) ----
+model ExpenseFolder {
+  id        String          @id @default(cuid())
+  name      String
+  color     String          @default("#6366f1")
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  reports   ExpenseReport[]
+}
+
+model ExpenseReport {
+  id             String             @id @default(cuid())
+  title          String
+  period         String
+  status         String             @default("draft")
+  reportType     String             @default("travel")
+  dueDate        String?
+  folderId       String?
+  folder         ExpenseFolder?     @relation(fields: [folderId], references: [id])
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  items          ExpenseItem[]
+  equipmentItems EquipmentItem[]
+  attachments    ExpenseAttachment[]
+}
+
+model ExpenseAttachment {
+  id        String        @id @default(cuid())
+  reportId  String
+  report    ExpenseReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  fileName  String
+  filePath  String
+  fileType  String
+  fileSize  Int
+  createdAt DateTime      @default(now())
+}
+
+model ExpenseItem {
+  id          String        @id @default(cuid())
+  reportId    String
+  report      ExpenseReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  date        String
+  purpose     String
+  destination String
+  departure   String        @default("")
+  transport   String        @default("")
+  amount      Int
+  category    String        @default("交通費")
+  notes       String        @default("")
+  sourceEmail String        @default("")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model EquipmentItem {
+  id           String        @id @default(cuid())
+  reportId     String
+  report       ExpenseReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  itemName     String
+  quantity     Int
+  unitPrice    Int
+  amount       Int
+  category     String        @default("")
+  purchaseDate String        @default("")
+  vendor       String        @default("")
+  receiptNo    String        @default("")
+  modelNumber  String        @default("")
+  purpose      String        @default("")
+  notes        String        @default("")
+  url          String        @default("")
+  quotationNo  String        @default("")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model ExcelTemplate {
+  id          String                @id @default(cuid())
+  name        String
+  description String                @default("")
+  fileName    String
+  filePath    String
+  sheetName   String                @default("")
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  mappings    TemplateCellMapping[]
+}
+
+model TemplateCellMapping {
+  id          String        @id @default(cuid())
+  templateId  String
+  template    ExcelTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  fieldKey    String
+  cellAddress String
+}
+
+model AppSettings {
+  id          String   @id @default("singleton")
+  profileJson String   @default("{}")
+  updatedAt   DateTime @updatedAt
+}
+
+model GoogleAccount {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  accessToken  String
+  refreshToken String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CalendarNote {
+  id        String   @id @default(cuid())
+  date      String
+  content   String
+  color     String   @default("#6366f1")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
