@@ -12,7 +12,6 @@ export async function extractTextFromFile(
     const pdf = await getDocument({
       data,
       useWorkerFetch: false,
-      isEvalSupported: false,
       useSystemFonts: true,
     }).promise
 
