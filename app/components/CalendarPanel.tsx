@@ -45,6 +45,7 @@ export default function CalendarPanel() {
       body: JSON.stringify({ date: selectedDate, content: editText }),
     })
     await loadMemos()
+    window.dispatchEvent(new Event('memo-updated'))
     setSaving(false)
     setSelectedDate(null)
   }

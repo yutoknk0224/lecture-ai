@@ -6,6 +6,7 @@ import { useSession, signOut } from 'next-auth/react'
 import TimetableGrid from './components/TimetableGrid'
 import CalendarPanel from './components/CalendarPanel'
 import TaskPanel from './components/TaskPanel'
+import MemoListPanel from './components/MemoListPanel'
 
 type MaterialSummary = {
   id: string
@@ -208,13 +209,20 @@ export default function Home() {
 
         {/* Main area: scrollable */}
         <main className="flex-1 overflow-auto p-6">
-          {/* Calendar + Task panel (above timetable) */}
-          <div className="flex gap-4 mb-6 min-h-72">
+          {/* Calendar + Task + Memo panel (above timetable) */}
+          <div className="flex gap-4 mb-6 h-72">
+            {/* Left: Calendar */}
             <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               <CalendarPanel />
             </div>
-            <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <TaskPanel />
+            {/* Right: Task (top) + Memo list (bottom) */}
+            <div className="flex-1 flex flex-col gap-4">
+              <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <TaskPanel />
+              </div>
+              <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <MemoListPanel />
+              </div>
             </div>
           </div>
 
