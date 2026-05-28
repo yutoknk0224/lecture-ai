@@ -1,5 +1,4 @@
 import fs from 'fs'
-import pdfParse from 'pdf-parse'
 
 export async function extractTextFromFile(
   filePath: string,
@@ -8,6 +7,7 @@ export async function extractTextFromFile(
   const buffer = fs.readFileSync(filePath)
 
   if (fileType === 'application/pdf' || filePath.endsWith('.pdf')) {
+    const { default: pdfParse } = await import('pdf-parse')
     const data = await pdfParse(buffer)
     return data.text
   }
