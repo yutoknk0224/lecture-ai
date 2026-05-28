@@ -402,7 +402,7 @@ export default function MaterialDetail({ materialId }: Props) {
           <div className="h-full flex flex-col">
             {material.fileType.includes('pdf') ? (
               <iframe
-                src={material.filePath}
+                src={`/api/materials/${material.id}/file`}
                 className="flex-1 w-full border-0"
                 title={material.title}
               />
