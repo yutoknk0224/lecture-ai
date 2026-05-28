@@ -17,6 +17,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   courses       Course[]
+  memos         LectureMemo[]
+  tasks         LectureTask[]
   createdAt     DateTime  @default(now())
 }
 
@@ -103,6 +105,27 @@ model ChatMessage {
   role       String
   content    String
   createdAt  DateTime @default(now())
+}
+
+model LectureMemo {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LectureTask {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  dueDate   String?
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ---- Expense models (unchanged) ----

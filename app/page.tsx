@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import TimetableGrid from './components/TimetableGrid'
+import CalendarPanel from './components/CalendarPanel'
+import TaskPanel from './components/TaskPanel'
 
 type MaterialSummary = {
   id: string
@@ -204,17 +206,29 @@ export default function Home() {
           </div>
         </aside>
 
-        {/* Timetable */}
-        <main className="flex-1 overflow-auto p-6">
-          <TimetableGrid
-            courses={filteredCourses}
-            currentYear={currentYear}
-            currentSemester={currentSemester}
-            onSelectCourse={(id) => router.push(`/courses/${id}`)}
-            onCourseCreated={loadCourses}
-            onCourseDeleted={loadCourses}
-          />
-        </main>
+        {/* Main area: timetable + bottom panels */}
+        <div className="flex-1 flex flex-col min-h-0 min-w-0">
+          <main className="flex-1 overflow-auto p-6">
+            <TimetableGrid
+              courses={filteredCourses}
+              currentYear={currentYear}
+              currentSemester={currentSemester}
+              onSelectCourse={(id) => router.push(`/courses/${id}`)}
+              onCourseCreated={loadCourses}
+              onCourseDeleted={loadCourses}
+            />
+          </main>
+
+          {/* Calendar + Task bottom panel */}
+          <div className="h-72 shrink-0 border-t border-slate-200 bg-white flex min-w-0">
+            <div className="w-56 shrink-0 border-r border-slate-200 overflow-hidden">
+              <CalendarPanel />
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <TaskPanel />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
