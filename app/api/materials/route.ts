@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
   const file = formData.get('file') as File | null
   const courseId = formData.get('courseId') as string
   const title = formData.get('title') as string
+  const lectureId = formData.get('lectureId') as string | null
 
   if (!file || !courseId) {
     return Response.json({ error: 'ファイルと科目IDは必須です' }, { status: 400 })
@@ -77,6 +78,7 @@ export async function POST(request: NextRequest) {
       extractedText,
       summary,
       courseId,
+      lectureId: lectureId || null,
     },
   })
 

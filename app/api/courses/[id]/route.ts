@@ -15,7 +15,17 @@ export async function GET(
   const course = await prisma.course.findFirst({
     where: { id, userId: session.user.id },
     include: {
+      lectures: {
+        orderBy: { order: 'asc' },
+        include: {
+          materials: {
+            select: { id: true, title: true, fileType: true, createdAt: true },
+            orderBy: { createdAt: 'desc' },
+          },
+        },
+      },
       materials: {
+        where: { lectureId: null },
         select: { id: true, title: true, fileType: true, createdAt: true },
         orderBy: { createdAt: 'desc' },
       },
