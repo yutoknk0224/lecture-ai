@@ -3,13 +3,14 @@ import Groq from 'groq-sdk'
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! })
 
 const MODEL = 'llama-3.3-70b-versatile'
+const FAST_MODEL = 'llama-3.1-8b-instant'
 
-const CHUNK_SIZE = 8000
-const MAX_CHUNKS = 10
+const CHUNK_SIZE = 6000
+const MAX_CHUNKS = 5
 
 async function summarizeChunk(chunk: string, index: number, total: number): Promise<string> {
   const response = await groq.chat.completions.create({
-    model: MODEL,
+    model: FAST_MODEL,
     messages: [
       {
         role: 'system',
@@ -40,7 +41,7 @@ const FINAL_SUMMARY_SYSTEM = `あなたは大学の授業資料を整理する�
 export async function summarizeContent(text: string): Promise<string> {
   if (text.length <= CHUNK_SIZE) {
     const response = await groq.chat.completions.create({
-      model: MODEL,
+      model: FAST_MODEL,
       messages: [
         { role: 'system', content: FINAL_SUMMARY_SYSTEM },
         { role: 'user', content: `以下の授業資料の内容を整理・要約してください：\n\n${text}` },
@@ -63,7 +64,7 @@ export async function summarizeContent(text: string): Promise<string> {
   const combined = chunkSummaries.join('\n\n---\n\n').slice(0, 12000)
 
   const response = await groq.chat.completions.create({
-    model: MODEL,
+    model: FAST_MODEL,
     messages: [
       { role: 'system', content: FINAL_SUMMARY_SYSTEM },
       {
