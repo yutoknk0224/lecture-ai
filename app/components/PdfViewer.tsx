@@ -32,13 +32,16 @@ function PdfPageCanvas({
     pdfDoc.getPage(pageNum).then((page: PdfPage) => {
       if (cancelled || !canvasRef.current) return
 
+      const dpr = window.devicePixelRatio || 1
       const viewport = page.getViewport({ scale: 1 })
-      const scale = width / viewport.width
+      const scale = (width / viewport.width) * dpr
       const scaledViewport = page.getViewport({ scale })
 
       const canvas = canvasRef.current
       canvas.width = Math.floor(scaledViewport.width)
       canvas.height = Math.floor(scaledViewport.height)
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${Math.floor(scaledViewport.height / dpr)}px`
 
       const ctx = canvas.getContext('2d')
       if (!ctx || cancelled) return
@@ -66,7 +69,7 @@ function PdfPageCanvas({
           : 'border-transparent'
       }`}
     >
-      <canvas ref={canvasRef} className="w-full block" />
+      <canvas ref={canvasRef} className="block" />
       {showLabel && (
         <p className="text-center text-[10px] text-slate-400 py-1 bg-white select-none">{pageNum}</p>
       )}
