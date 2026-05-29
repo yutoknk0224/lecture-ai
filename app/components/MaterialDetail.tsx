@@ -1,9 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import QuizSection from './QuizSection'
+
+const PdfViewer = dynamic(() => import('./PdfViewer'), { ssr: false })
 
 type ChatMessage = {
   id: string
@@ -401,11 +404,9 @@ export default function MaterialDetail({ materialId }: Props) {
         {tab === 'view' && (
           <div className="h-full flex flex-col">
             {material.fileType.includes('pdf') ? (
-              <iframe
-                src={`/api/materials/${material.id}/file`}
-                className="flex-1 w-full border-0"
-                title={material.title}
-              />
+              <div className="flex-1 overflow-hidden">
+                <PdfViewer url={`/api/materials/${material.id}/file`} />
+              </div>
             ) : (
               <div className="flex-1 overflow-y-auto p-6">
                 {material.extractedText ? (
