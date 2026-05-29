@@ -82,6 +82,7 @@ export default function PdfViewer({ url }: { url: string }) {
   const [numPages, setNumPages] = useState(0)
   const [mode, setMode] = useState<'grid' | 'page'>('grid')
   const [currentPage, setCurrentPage] = useState(1)
+  const [zoom, setZoom] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const mainContainerRef = useRef<HTMLDivElement>(null)
@@ -249,21 +250,45 @@ export default function PdfViewer({ url }: { url: string }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
+          <div className="h-4 w-px bg-slate-200 ml-auto" />
+          {/* Zoom controls */}
+          <button
+            onClick={() => setZoom((z) => Math.max(0.5, parseFloat((z - 0.25).toFixed(2))))}
+            disabled={zoom <= 0.5}
+            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-indigo-600 disabled:text-slate-300 disabled:hover:bg-transparent transition-colors text-base font-bold"
+          >
+            −
+          </button>
+          <button
+            onClick={() => setZoom(1)}
+            className="text-xs text-slate-500 hover:text-indigo-600 px-1.5 py-1 rounded-lg hover:bg-indigo-50 transition-colors tabular-nums font-medium min-w-[3rem] text-center"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+          <button
+            onClick={() => setZoom((z) => Math.min(4, parseFloat((z + 0.25).toFixed(2))))}
+            disabled={zoom >= 4}
+            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-indigo-600 disabled:text-slate-300 disabled:hover:bg-transparent transition-colors text-base font-bold"
+          >
+            ＋
+          </button>
         </div>
 
         {/* Page canvas */}
         <div
           ref={mainContainerRef}
-          className="flex-1 overflow-auto flex justify-center items-start p-4 bg-slate-100"
+          className="flex-1 overflow-auto bg-slate-100 p-4"
         >
-          {mainWidth > 0 && (
-            <PdfPageCanvas
-              key={currentPage}
-              pdfDoc={pdfDoc}
-              pageNum={currentPage}
-              width={mainWidth}
-            />
-          )}
+          <div className="flex justify-center min-w-fit">
+            {mainWidth > 0 && (
+              <PdfPageCanvas
+                key={`${currentPage}-${zoom}`}
+                pdfDoc={pdfDoc}
+                pageNum={currentPage}
+                width={Math.round(mainWidth * zoom)}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
