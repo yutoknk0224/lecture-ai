@@ -7,6 +7,7 @@ import TimetableGrid from './components/TimetableGrid'
 import CalendarPanel from './components/CalendarPanel'
 import TaskPanel from './components/TaskPanel'
 import MemoListPanel from './components/MemoListPanel'
+import GlobalSearch from './components/GlobalSearch'
 
 type MaterialSummary = {
   id: string
@@ -92,7 +93,11 @@ export default function Home() {
           <span className="text-xs text-slate-400">· {filteredCourses.length}科目</span>
         </div>
 
-        <nav className="ml-auto flex items-center gap-1">
+        <div className="ml-auto mr-3">
+          <GlobalSearch />
+        </div>
+
+        <nav className="flex items-center gap-1">
           <span className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium rounded-lg">講義資料</span>
           <a href="/expense" className="px-3 py-1.5 text-slate-500 text-sm font-medium rounded-lg hover:bg-slate-100 transition-colors">
             経費精算
